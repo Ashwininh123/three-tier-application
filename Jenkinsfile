@@ -5,7 +5,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'GitHub repository connected successfully!'
-                checkout scm
             }
         }
 
@@ -24,10 +23,27 @@ pipeline {
             }
         }
 
+        stage('Verify Docker Image') {
+            steps {
+                sh 'docker images'
+                echo 'Docker image build completed successfully!'
+            }
+        }
+
         stage('Success') {
             steps {
-                echo 'Three-tier application Docker image built successfully!'
+                echo 'Three-tier application pipeline completed successfully!'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'SUCCESS: Pipeline completed!'
+        }
+
+        failure {
+            echo 'FAILED: Please check the Console Output.'
         }
     }
 }
