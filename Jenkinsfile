@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 stages {
     stage('Checkout') {
         steps {
@@ -12,8 +11,7 @@ stages {
     stage('Build') {
         steps {
             echo 'Build stage started!'
-            echo 'Three-tier
- application pipeline is running!'
+            echo 'Three-tier application pipeline is running!'
         }
     }
 
@@ -23,6 +21,5 @@ stages {
         }
     }
 }
-```
 
 }
