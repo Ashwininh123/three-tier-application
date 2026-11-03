@@ -1,27 +1,38 @@
-stage('Deploy to App EC2') {
-    steps {
-        withCredentials([
-            sshUserPrivateKey(
-                credentialsId: 'app-ec2-ssh',
-                keyFileVariable: 'SSH_KEY',
-                usernameVariable: 'SSH_USER'
-            ),
-            usernamePassword(
-                credentialsId: 'aws-jenkins-credentials',
-                usernameVariable: 'AWS_ACCESS_KEY_ID',
-                passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-            )
-        ]) {
-            bat '''
-                @echo off
-                echo Checking AWS credentials...
+pipeline {
+    agent any
 
-                "C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" sts get-caller-identity --region ap-south-1
+    stages {
+        stage('Check AWS Credentials') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'aws-jenkins-credentials',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )
+                ]) {
+                    bat '''
+                        @echo off
+                        echo Checking AWS credentials...
 
-                if errorlevel 1 exit /b 1
+                        "C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" sts get-caller-identity --region ap-south-1
 
-                echo AWS credentials are working!
-            '''
+                        if errorlevel 1 exit /b 1
+
+                        echo AWS credentials are working!
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'AWS credentials test completed successfully!'
+        }
+
+        failure {
+            echo 'AWS credentials test failed. Check Console Output.'
         }
     }
 }
