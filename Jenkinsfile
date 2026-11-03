@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Check AWS Credentials') {
+        stage('Test EC2 Tunnel') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -13,26 +13,12 @@ pipeline {
                 ]) {
                     bat '''
                         @echo off
-                        echo Checking AWS credentials...
+                        echo Testing EC2 Instance Connect tunnel...
 
-                        "C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" sts get-caller-identity --region ap-south-1
-
-                        if errorlevel 1 exit /b 1
-
-                        echo AWS credentials are working!
+                        "C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" ec2-instance-connect open-tunnel --instance-connect-endpoint-id eice-072a44e3c63b04ef6 --instance-id i-02434948c1819a3dd --remote-port 22 --local-port 2222 --region ap-south-1
                     '''
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'AWS credentials test completed successfully!'
-        }
-
-        failure {
-            echo 'AWS credentials test failed. Check Console Output.'
         }
     }
 }
